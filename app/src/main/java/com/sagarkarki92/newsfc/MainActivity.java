@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -21,7 +22,7 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     List<Article> articles;
     NewsAdaptor adaptor;
@@ -30,16 +31,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        swipeRefreshLayout = findViewById(R.id.swipeLayout);
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setNestedScrollingEnabled(false);
 
         getData();
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getData();
+            }
+        });
+        swipeRefreshLayout.setRefreshing(false);
+
     }
 
     public void getData(){
-        String country = Util.getCountry();
+
         Log.d("before", "onResponse: before call " );
         ApiClient.getInstance().getNews().enqueue(new Callback<News>() {
             @Override
